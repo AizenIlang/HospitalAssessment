@@ -1,0 +1,56 @@
+{
+	"name": "dataflow1",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "HospitalData",
+						"type": "DatasetReference"
+					},
+					"name": "HospitalSource"
+				}
+			],
+			"sinks": [
+				{
+					"name": "sink1"
+				},
+				{
+					"name": "sink2"
+				},
+				{
+					"name": "sink3"
+				},
+				{
+					"name": "sink4"
+				},
+				{
+					"name": "sink5"
+				},
+				{
+					"name": "sink6"
+				},
+				{
+					"name": "sink7"
+				},
+				{
+					"dataset": {
+						"referenceName": "SQLDatabaseSink",
+						"type": "DatasetReference"
+					},
+					"name": "sink8"
+				}
+			],
+			"transformations": [
+				{
+					"name": "RemoveURI"
+				},
+				{
+					"name": "ConditionalSplit1"
+				}
+			],
+			"script": "source(output(\n\t\tcountry as string,\n\t\tindicator as string,\n\t\tdate as string,\n\t\tyear_week as string,\n\t\tvalue as string,\n\t\tsource as string,\n\t\turl as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false,\n\tpartitionBy('hash', 1)) ~> HospitalSource\nHospitalSource select(mapColumn(\n\t\tcountry,\n\t\tindicator,\n\t\tdate,\n\t\tyear_week,\n\t\tvalue,\n\t\tsource\n\t),\n\tpartitionBy('hash', 1),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> RemoveURI\nRemoveURI split(ERROR_FUNCTION(''),\n\tERROR_FUNCTION(''),\n\tERROR_FUNCTION(''),\n\tERROR_FUNCTION(''),\n\tERROR_FUNCTION(''),\n\tERROR_FUNCTION(''),\n\tERROR_FUNCTION(''),\n\tdisjoint: true,\n\tpartitionBy('hash', 1)) ~> ConditionalSplit1@(Conditional1, conditional8, Conditional7, Conditional6, Conditional3, Conditional4, Conditional5, Conditional2)\nConditionalSplit1@Conditional1 sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> sink1\nConditionalSplit1@Conditional3 sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> sink2\nConditionalSplit1@Conditional6 sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> sink3\nConditionalSplit1@Conditional5 sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> sink4\nConditionalSplit1@Conditional4 sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> sink5\nConditionalSplit1@Conditional7 sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> sink6\nConditionalSplit1@conditional8 sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> sink7\nConditionalSplit1@Conditional2 sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> sink8"
+		}
+	}
+}
